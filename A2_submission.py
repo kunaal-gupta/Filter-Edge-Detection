@@ -1,3 +1,4 @@
+import cv2
 from skimage import data, io, filters
 import numpy as np
 import matplotlib.pyplot as plt
@@ -13,10 +14,10 @@ def part1():
     I = io.imread('moon.png')
     h_image, w_image = I.shape
 
-    K = np.array([[ 0], [0, 1, 0, 1, 0], [0, 0, 0, 1, 0]])
+    K = np.array([[0], [0, 1, 0, 1, 0], [0, 0, 0, 1, 0]])
     K = np.array([[-1, -1, -1], [1, -8, -1], [-1, -1, -1]])
 
-    # K = K/K.sum()
+    K = K / K.sum()
     h_ker, w_ker = K.shape
 
     hf_ker = np.cast['int']((h_ker - 1.) / 2.)
@@ -41,9 +42,6 @@ def part1():
 
 
 def part2():
-    import cv2
-    import numpy as np
-
     img = cv2.imread('noisy.jpg')
     median = cv2.medianBlur(img, 5)
     pup_blur = cv2.GaussianBlur(img, (15, 15), 0)
@@ -54,9 +52,26 @@ def part2():
     cv2.destroyAllWindows
 
 
-
 def part3():
-    """add your code here"""
+    I = io.imread('damage_cameraman.png')
+    U = io.imread('damage_mask.png')
+    h, w = I.shape
+
+    J = I.copy()
+
+    for i in range(7):
+        print(i)
+        J = cv2.GaussianBlur(J, (15, 15), 0)
+
+        for i in np.arange(0, h, 1):
+            for j in np.arange(0, w, 1):
+                J[i, j] = np.where(U[i, j] != 0, I[i, j], J[i, j])
+
+    compare = np.concatenate((I, J), axis=1)  # side by side comparison
+
+    cv2.imshow('img', compare)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows
 
 
 def part4():
@@ -68,8 +83,8 @@ def part5():
 
 
 if __name__ == '__main__':
-    part1()
+    # part1()
     # part2()
-    # part3()
+    part3()
     part4()
     part5()
